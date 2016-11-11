@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from page_objects.Login import Login
+from page_objects.login import Login
 from common import SeleniumCase
 
 
