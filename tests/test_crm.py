@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from page_objects.login import Login
 from common import SeleniumCase
 
 
@@ -8,14 +7,9 @@ class TestCRM(SeleniumCase):
 
     _depends = ['crm']
 
-    def setUp(self):
-        super(TestCRM, self).setUp()
-        self.web_client = Login(self.driver, self.odoo_url).login("admin", "admin")
-        # FIXME
-        import os
-        self.addCleanup(os.kill, self.odoo_process.pid, 9)
-
     def test_01_partners_handling(self):
+        self.web_client = self.login("admin", "admin")
+
         # Create two partners
         self.web_client.open_app_switcher()
         self.web_client.app_switcher.click_on_menu("CRM")

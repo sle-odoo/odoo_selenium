@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from page_objects.login import Login
+
 from hashlib import md5
 from selenium import webdriver
 from shutil import rmtree
@@ -157,6 +159,11 @@ class SeleniumCase(TestCase):
 
         self.odoo_process, self.odoo_url = odoo_spawn(self.dbname)
         self.driver = webdriver.Chrome()
+
+        # The `Login.login` method will perform the first GET on `self.odoo_url` and actually
+        # attempt to log into the webclient. If this is successful, it'll return a `WebClient`
+        # instance which exposes methods to browse and test the Odoo webclient.
+        self.login = Login(self.driver, self.odoo_url).login
 
     def tearDown(self):
         self.driver.close()
