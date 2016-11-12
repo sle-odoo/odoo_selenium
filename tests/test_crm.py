@@ -6,18 +6,16 @@ from common import SeleniumCase
 
 class TestCRM(SeleniumCase):
 
+    _depends = ['crm']
+
     def setUp(self):
         super(TestCRM, self).setUp()
-        self.web_client = Login(self.driver, "http://localhost:8069").login("admin", "admin")
+        self.web_client = Login(self.driver, self.odoo_url).login("admin", "admin")
+        # FIXME
+        import os
+        self.addCleanup(os.kill, self.odoo_process.pid, 9)
 
     def test_01_partners_handling(self):
-        # Install CRM
-        self.assertTrue(self.web_client.app_switcher.is_opened())
-        self.web_client.app_switcher.click_on_menu("Apps")
-        self.assertTrue(self.web_client.kanban_view.is_opened())
-        self.web_client.control_panel.search_view.type_and_enter("CRM")
-        self.web_client.kanban_view.click_on_button_in_vignette(1)
-
         # Create two partners
         self.web_client.open_app_switcher()
         self.web_client.app_switcher.click_on_menu("CRM")

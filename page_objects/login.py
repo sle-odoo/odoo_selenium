@@ -35,4 +35,6 @@ class Login(object):
             expected_conditions.invisibility_of_element_located((By.CLASS_NAME, "o_loading"))
         )
 
+        self.driver.implicitly_wait(5)  # assets loading?
+
         return WebClient(self.driver)
