@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 
+from selenium.webdriver.support.select import Select
 from selenium.common.exceptions import NoSuchElementException
 
 from page_objects.common import PageObject
@@ -53,7 +54,15 @@ class FormView(PageObject):
     def fill_field_by_label(self, label_text, value):
         label = self._find_label(label_text)
         field_id = label.get_attribute("for")
-        self.driver.find_element_by_id(field_id).send_keys(value)
+
+        field_elem = self.driver.find_element_by_id(field_id)
+
+        # Selection field
+        if field_elem.tag_name == 'select':
+            select_elem = Select(field_elem)
+            select_elem.select_by_visible_text(value)
+        else:
+            field_elem.send_keys(value)
 
     def get_field_value_by_label_name(self, label_name):
         label = self._find_label(label_name)
