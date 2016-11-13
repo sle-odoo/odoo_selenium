@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 
 from selenium.webdriver.support.select import Select
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, WebDriverException
 
 from page_objects.common import PageObject
 from page_objects.common import wait_rpc_done
@@ -9,8 +9,37 @@ from page_objects.common import wait_rpc_done
 
 class FormView(PageObject):
 
-    def is_opened(self):
-        return self.driver.find_element_by_class_name("o_form_view") is not None
+    def get_root(self, top=False):
+        # It is possible to have multiple form views opened, like when a wizard
+        # is opened in front of a "main" form view. As `find_elements_by_class_name`
+        # returns elements in the document order, the main one will always be the
+        # first result and the wizard one will always be the last one.
+        form_views = self.driver.find_elements_by_class_name("o_form_view")
+        if len(form_views) == 0:
+            return None
+        elif len(form_views) == 1:
+            return form_views[0]
+        else:
+            if top:
+                return form_views[-1]
+            else:
+                return form_views[0]
+
+    def is_opened(self, top=False):
+        form_view = self.get_root(top=top)
+        if not form_view:
+            return False
+
+        # Trigger a click on the form view, if it raises then we now the element
+        # is present but not "opened" (unreachable since hidden behind a wizard for
+        # instance. Triggering a click should do nothing logic-wise on the form
+        # view, however it seems to scroll down a little.
+        try:
+            form_view.click()
+        except WebDriverException:
+            return False
+        else:
+            return True
 
     def is_in_edit_mode(self):
         return self.driver.find_element_by_class_name("o_form_editable") is not None
