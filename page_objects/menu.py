@@ -5,9 +5,14 @@ from selenium.webdriver import ActionChains
 
 from page_objects.common import PageObject
 from page_objects.common import wait_rpc_done
+from page_objects.user_menu import UserMenu
 
 
 class Menu(PageObject):
+
+    def __init__(self, *args, **kwargs):
+        super(Menu, self).__init__(*args, **kwargs)
+        self.user_menu = UserMenu(self.driver)
 
     @property
     def root(self):

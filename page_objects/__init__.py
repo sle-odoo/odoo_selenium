@@ -11,6 +11,7 @@ import menu
 import pager
 import search_view
 import side_bar
+import user_menu
 import view_switcher
 import web_client
 import wizard
