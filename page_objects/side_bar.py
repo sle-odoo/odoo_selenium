@@ -1,17 +1,22 @@
 # -*- coding: utf-8 -*-
 
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.wait import WebDriverWait
+
 from page_objects.common import PageObject
-from page_objects.common import wait_rpc_done
 
 
 class SideBar(PageObject):
 
-    @wait_rpc_done()
-    def click_on_action(self, action_name):
-        # open the drop-down
-        self.driver.find_element_by_class_name("o_cp_sidebar").click()
+    @property
+    def root(self):
+        return self.driver.find_element_by_class_name("o_cp_sidebar")
 
-        # click on the action
+    def click_on_action(self, action_name):
+        wait = WebDriverWait(self.driver, 10)
+        wait.until(ec.visibility_of(self.root))
+
+        self.root.click()
         self.driver\
             .find_element_by_class_name("o_cp_sidebar")\
             .find_element_by_link_text(action_name)\
