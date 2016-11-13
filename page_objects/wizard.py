@@ -1,9 +1,10 @@
 # -*- coding: utf-8 -*-
 
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support import expected_conditions as ec
+from selenium.webdriver.support.wait import WebDriverWait
 
 from page_objects.common import PageObject
-from page_objects.common import wait_rpc_done
 
 
 class Wizard(PageObject):
@@ -11,7 +12,6 @@ class Wizard(PageObject):
     def is_opened(self):
         return self.driver.find_element_by_class_name("modal") is not None
 
-    @wait_rpc_done()
     def click_on_footer_buttons(self, button_text):
         button_to_click_index = None
         buttons = self.driver\
@@ -27,3 +27,11 @@ class Wizard(PageObject):
             buttons[button_to_click_index].click()
         except (IndexError, ValueError):
             raise NoSuchElementException(msg='Button "%s" was not found' % button_text)
+
+        # FIXME: cannot use `page_objects.common.wait_rpc_done` because clicking on a
+        # footer button does not trigger the display of the "loading" widget. We'll
+        # wait for the disappearance of the button instead, but when we click on a
+        # footer button that does not close the wizard (print wizard) this should be
+        # adapted
+        wait = WebDriverWait(self.driver, 10)
+        wait.until(ec.staleness_of(buttons[button_to_click_index]))
