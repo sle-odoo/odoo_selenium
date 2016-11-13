@@ -1,5 +1,7 @@
 # -*- coding: utf-8 -*-
 
+from selenium.webdriver.common.keys import Keys
+
 from page_objects.common import PageObject
 from page_objects.common import wait_rpc_done
 
@@ -34,3 +36,16 @@ class ListView(PageObject):
             .find_element_by_tag_name("tbody")\
             .find_elements_by_tag_name("tr")
         rows[row_index -1].click()
+
+
+    @wait_rpc_done()
+    def click_on_row_and_type(self, row_index, text):
+        rows = self.root \
+            .find_element_by_tag_name("tbody") \
+            .find_elements_by_tag_name("tr")
+        row = rows[row_index - 1]
+
+        row.click()
+        cell = self.driver.switch_to_active_element()
+        cell.send_keys(text)
+        cell.send_keys(Keys.ENTER)
