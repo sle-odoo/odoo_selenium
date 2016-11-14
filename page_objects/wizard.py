@@ -13,10 +13,12 @@ class Wizard(PageObject):
         return self.driver.find_element_by_class_name("modal") is not None
 
     def click_on_footer_buttons(self, button_text):
-        button_to_click_index = None
         buttons = self.driver\
-            .find_element_by_class_name("modal")\
-            .find_element_by_class_name("modal-footer")\
+            .find_element_by_xpath(
+                "//html//body[contains(@class, 'o_web_client')]" +
+                "/div[contains(@class, 'modal') and contains(@class, 'in')]" +
+                "/div[contains(@class, 'modal-dialog')" +
+                "]/div/div[@class='modal-footer']")\
             .find_elements_by_tag_name("button")
 
         for index, button in enumerate(buttons):
