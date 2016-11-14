@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
-
+from selenium.webdriver.common.by import By
+from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.select import Select
 from selenium.common.exceptions import NoSuchElementException, WebDriverException
+from selenium.webdriver.support.wait import WebDriverWait
 
 from page_objects.common import PageObject
 from page_objects.common import wait_rpc_done
@@ -60,9 +62,13 @@ class FormView(PageObject):
     def edit(self):
         self.driver.find_element_by_class_name("o_form_button_edit").click()
 
-    @wait_rpc_done()
     def save(self):
         self.driver.find_element_by_class_name("o_form_button_save").click()
+        wait = WebDriverWait(self.driver, 10)
+        # FIXME
+        wait.until(
+            expected_conditions.invisibility_of_element_located((By.CLASS_NAME, "o_form_button_save"))
+        )
 
     @wait_rpc_done()
     def discard(self):
