@@ -5,9 +5,14 @@ from selenium.common.exceptions import NoSuchElementException, WebDriverExceptio
 
 from page_objects.common import PageObject
 from page_objects.common import wait_rpc_done
+from page_objects.status_bar import StatusBar
 
 
 class FormView(PageObject):
+
+    def __init__(self, *args, **kwargs):
+        super(FormView, self).__init__(*args, **kwargs)
+        self.status_bar = StatusBar(self.driver)
 
     def get_root(self, top=False):
         # It is possible to have multiple form views opened, like when a wizard
