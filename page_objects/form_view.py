@@ -56,19 +56,21 @@ class FormView(PageObject):
 
     @wait_rpc_done()
     def create(self):
+        wait = WebDriverWait(self.driver, 10)
+        wait.until_not(expected_conditions.invisibility_of_element_located((By.CLASS_NAME, "o_form_button_create")))
         self.driver.find_element_by_class_name("o_form_button_create").click()
 
     @wait_rpc_done()
     def edit(self):
         self.driver.find_element_by_class_name("o_form_button_edit").click()
-
-    def save(self):
-        self.driver.find_element_by_class_name("o_form_button_save").click()
         wait = WebDriverWait(self.driver, 10)
-        # FIXME
-        wait.until(
-            expected_conditions.invisibility_of_element_located((By.CLASS_NAME, "o_form_button_save"))
-        )
+        wait.until(expected_conditions.invisibility_of_element_located((By.CLASS_NAME, "o_form_button_edit")))
+
+    @wait_rpc_done()
+    def save(self):
+        wait = WebDriverWait(self.driver, 10)
+        wait.until_not(expected_conditions.invisibility_of_element_located((By.CLASS_NAME, "o_form_button_save")))
+        self.driver.find_element_by_class_name("o_form_button_save").click()
 
     @wait_rpc_done()
     def discard(self):
