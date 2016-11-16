@@ -2,7 +2,7 @@
 
 from selenium.common.exceptions import NoSuchElementException
 
-from page_objects.common import PageObject
+from page_objects.common import PageObject, wait_rpc_done
 
 
 class StatusBar(PageObject):
@@ -11,6 +11,7 @@ class StatusBar(PageObject):
     def root(self):
         return self.driver.find_element_by_class_name("o_form_statusbar")
 
+    @wait_rpc_done()
     def click(self, button_text):
         found = False
         buttons = self.root.find_elements_by_tag_name("button")
