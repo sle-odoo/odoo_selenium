@@ -159,6 +159,7 @@ class SeleniumCase(TestCase):
 
         self.odoo_process, self.odoo_url = odoo_spawn(self.dbname)
         self.driver = webdriver.Chrome()
+        self.driver.maximize_window()
 
         # The `Login.login` method will perform the first GET on `self.odoo_url` and actually
         # attempt to log into the webclient. If this is successful, it'll return a `WebClient`
