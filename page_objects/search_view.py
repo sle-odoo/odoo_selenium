@@ -2,8 +2,7 @@
 
 from selenium.webdriver.common.keys import Keys
 
-from page_objects.common import PageObject
-from page_objects.common import wait_rpc_done
+from page_objects.common import PageObject, wait_rpc_done
 
 
 class SearchView(PageObject):

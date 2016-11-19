@@ -2,7 +2,7 @@
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions
 from selenium.webdriver.support.select import Select
-from selenium.common.exceptions import NoSuchElementException, WebDriverException
+from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.support.wait import WebDriverWait
 
 from page_objects.common import PageObject
@@ -16,40 +16,20 @@ class FormView(PageObject):
         super(FormView, self).__init__(*args, **kwargs)
         self.status_bar = StatusBar(self.driver)
 
-    def get_root(self, top=False):
-        # It is possible to have multiple form views opened, like when a wizard
-        # is opened in front of a "main" form view. As `find_elements_by_class_name`
-        # returns elements in the document order, the main one will always be the
-        # first result and the wizard one will always be the last one.
-        form_views = self.driver.find_elements_by_class_name("o_form_view")
-        if len(form_views) == 0:
-            return None
-        elif len(form_views) == 1:
-            return form_views[0]
-        else:
-            if top:
-                return form_views[-1]
-            else:
-                return form_views[0]
+    @property
+    def root(self):
+        form_views = self.driver.find_elements_by_class_name('o_form_view')
+        return next((form_view for form_view in form_views if form_view.is_displayed()), None)
 
-    def is_opened(self, top=False):
-        form_view = self.get_root(top=top)
-        if not form_view:
-            return False
-
-        # Trigger a click on the form view, if it raises then we now the element
-        # is present but not "opened" (unreachable since hidden behind a wizard for
-        # instance. Triggering a click should do nothing logic-wise on the form
-        # view, however it seems to scroll down a little.
-        try:
-            form_view.click()
-        except WebDriverException:
-            return False
-        else:
-            return True
+    def is_opened(self):
+        return self.root is not None
 
     def is_in_edit_mode(self):
-        return self.driver.find_element_by_class_name("o_form_editable") is not None
+        try:
+            self.driver.find_element_by_class_name("o_form_editable")
+            return True
+        except NoSuchElementException:
+            return False
 
     def is_in_readonly_mode(self):
         return not self.is_in_edit_mode()
@@ -62,9 +42,9 @@ class FormView(PageObject):
 
     @wait_rpc_done()
     def edit(self):
-        self.driver.find_element_by_class_name("o_form_button_edit").click()
         wait = WebDriverWait(self.driver, 10)
-        wait.until(expected_conditions.invisibility_of_element_located((By.CLASS_NAME, "o_form_button_edit")))
+        wait.until_not(expected_conditions.invisibility_of_element_located((By.CLASS_NAME, "o_form_button_edit")))
+        self.driver.find_element_by_class_name("o_form_button_edit").click()
 
     @wait_rpc_done()
     def save(self):

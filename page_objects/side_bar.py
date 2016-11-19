@@ -1,23 +1,25 @@
 # -*- coding: utf-8 -*-
 
-from selenium.webdriver.support import expected_conditions as ec
-from selenium.webdriver.support.wait import WebDriverWait
+from selenium.common.exceptions import NoSuchElementException
 
-from page_objects.common import PageObject
+from page_objects.common import PageObject, wait_rpc_done
 
 
 class SideBar(PageObject):
 
     @property
     def root(self):
-        return self.driver.find_element_by_class_name("o_cp_sidebar")
+        try:
+            return self.driver.find_element_by_class_name("o_cp_sidebar")
+        except NoSuchElementException:
+            return None
 
-    def click_on_action(self, action_name):
-        wait = WebDriverWait(self.driver, 10)
-        wait.until(ec.visibility_of(self.root))
+    def is_opened(self):
+        return self.root is not None
 
+    @wait_rpc_done()
+    def click(self, action_name):
         self.root.click()
-        self.driver\
-            .find_element_by_class_name("o_cp_sidebar")\
+        self.root\
             .find_element_by_link_text(action_name)\
             .click()

@@ -2,25 +2,26 @@
 
 from selenium.common.exceptions import NoSuchElementException
 
-from page_objects.common import PageObject
-from page_objects.common import wait_rpc_done
+from page_objects.common import PageObject, wait_rpc_done
 
 
 class AppSwitcher(PageObject):
 
-    def is_opened(self):
+    @property
+    def root(self):
         try:
-            self.driver.find_element_by_class_name("o_application_switcher")
+            return self.driver.find_element_by_class_name("o_application_switcher")
         except NoSuchElementException:
-            return False
-        else:
-            return True
+            return None
+
+    def is_opened(self):
+        return self.root is not None
 
     @wait_rpc_done()
     def click_on_menu(self, menu_text):
-        self.driver.find_element_by_link_text(menu_text).click()
+        self.root.find_element_by_link_text(menu_text).click()
 
+    @wait_rpc_done()
     def open(self):
-        if self.is_opened():
-            return
-        self.driver.find_element_by_class_name("o_menu_toggle").click()
+        if not self.is_opened():
+            self.driver.find_element_by_class_name("o_menu_toggle").click()

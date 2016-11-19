@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from selenium.common.exceptions import NoSuchElementException
+from selenium.common.exceptions import NoSuchElementException, StaleElementReferenceException
 from selenium.webdriver.support.wait import WebDriverWait
 
 from page_objects.common import PageObject, wait_rpc_done
@@ -29,7 +29,7 @@ class KanbanView(PageObject):
 
     def get_vignette(self, vignette_index):
         vignettes = self.get_vignettes()
-        if len(vignettes) < vignette_index - 1:
+        if len(vignettes) < vignette_index:
             raise NoSuchElementException(msg='Vignette with index %s was not found '
                                              '(not enough vignettes in the displayed kanban view).' % vignette_index)
         return vignettes[vignette_index - 1]
@@ -48,7 +48,7 @@ class KanbanView(PageObject):
         return expected_text in self.get_vignette(vignette_index).text
 
     def wait_until_vignette_is_visible_and_contains(self, vignette_index, expected_text):
-        wait = WebDriverWait(self.driver, 30)
+        wait = WebDriverWait(self.driver, 30, ignored_exceptions=[StaleElementReferenceException])
 
         def _wait_until_vignette_is_visible_and_contains(driver):
             if len(self.get_vignettes()) >= vignette_index:
@@ -56,3 +56,11 @@ class KanbanView(PageObject):
             return False
 
         wait.until(_wait_until_vignette_is_visible_and_contains)
+
+    def wait_is_opened(self):
+        wait = WebDriverWait(self.driver, 10)
+
+        def _wait_until_wizard_is_opened(driver):
+            return self.root is not None
+
+        wait.until(_wait_until_wizard_is_opened)

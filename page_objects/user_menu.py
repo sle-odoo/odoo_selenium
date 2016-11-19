@@ -2,8 +2,7 @@
 
 from selenium.common.exceptions import NoSuchElementException
 
-from page_objects.common import PageObject
-from page_objects.common import wait_rpc_done
+from page_objects.common import PageObject, wait_rpc_done
 
 
 class UserMenu(PageObject):
@@ -18,9 +17,7 @@ class UserMenu(PageObject):
         user_menu_entries = self.root\
             .find_element_by_class_name("dropdown-menu")\
             .find_elements_by_xpath("*")
-        for user_menu_entry in user_menu_entries:
-            if user_menu_entry.text == text:
-                user_menu_entry.click()
-                return
-
-        raise NoSuchElementException(msg='Usermenu entry "%s" was not found' % text)
+        entry = next((entry for entry in user_menu_entries if entry.text == text), None)
+        if not entry:
+            raise NoSuchElementException(msg='Usermenu entry "%s" was not found.' % text)
+        entry.click()
