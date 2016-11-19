@@ -13,15 +13,17 @@ class StatusBar(PageObject):
 
     @wait_rpc_done()
     def click(self, button_text):
-        found = False
-        buttons = self.root.find_elements_by_tag_name("button")
-        for index, button in enumerate(buttons):
-            if button.text == button_text:
-                button.click()
-                found = True
-
-        if not found:
-            raise NoSuchElementException(msg='Button "%s" was not found' % button_text)
-        else:
-            # FIXME
-            self.driver.implicitly_wait(5)
+        buttons = self.root\
+            .find_element_by_class_name("o_statusbar_buttons")\
+            .find_elements_by_tag_name("button")
+        # if all buttons are hidden, it means we're in mobile mode and have to
+        # open the dropdown
+        if all(not button.is_displayed() for button in buttons):
+            self.root \
+                .find_element_by_class_name("o_statusbar_buttons")\
+                .find_element_by_class_name("dropdown-toggle")\
+                .click()
+        button = next((button for button in buttons if button.text == button_text), None)
+        if not button:
+            raise NoSuchElementException(msg='Button "%s" was not found.' % button_text)
+        button.click()
