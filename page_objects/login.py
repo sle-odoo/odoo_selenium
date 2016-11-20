@@ -24,9 +24,8 @@ class Login(object):
         self.driver.find_element_by_name("password").submit()
 
         wait.until(expected_conditions.presence_of_element_located((By.CLASS_NAME, "o_web_client")))
-
         wait.until(expected_conditions.invisibility_of_element_located((By.CLASS_NAME, "o_loading")))
-
-        self.driver.implicitly_wait(5)  # assets loading?
+        wait.until(expected_conditions.visibility_of_element_located((By.CLASS_NAME, "o_main_navbar")))
+        wait.until(expected_conditions.visibility_of_element_located((By.CLASS_NAME, "o_user_menu")))
 
         return WebClient(self.driver)
