@@ -108,7 +108,7 @@ def odoo_spawn(name):
         '--db-filter', '^%s$' % name,
         '--xmlrpc-port', str(port),
     ]
-    process = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.PIPE, cwd=ODOO_DIR)
+    process = subprocess.Popen(cmd, cwd=ODOO_DIR)
     print "spawned an odoo instance at port %s" % port
     return process, 'http://localhost:%s' % port
 
